@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE VOICE 10 - CHUNG KẾT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap');
+        
+        body { 
+            font-family: 'Nunito', sans-serif; 
+            background: linear-gradient(135deg, #e0f2fe 0%, #fae8ff 100%); 
+            color: #1f2937; 
+            min-height: 100vh;
+        }
+        
+        /* Vibrant Effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(to right, #ec4899, #8b5cf6, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-vibrant {
+            background: linear-gradient(to right, #4ade80, #3b82f6);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-vibrant:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Mind Map Shapes */
+        .diamond {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            display: flex; justify-content: center; align-items: center;
+            text-align: center; font-weight: 800;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        
+        .mm-input {
+            transition: all 0.2s;
+        }
+        .mm-input:focus {
+            transform: scale(1.05);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.5);
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background: white !important; color: black !important; }
+            .no-print { display: none !important; }
+            .glass-panel { border: 1px solid #000; box-shadow: none; background: white; }
+            input, textarea { border: 1px solid #000 !important; color: #000 !important; background: transparent !important; }
+            .diamond { border: 2px solid black; background: transparent !important; color: black !important; }
+        }
+        
+        /* Tab transitions */
+        .tab-content { display: none; animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .tab-content.active { display: block; }
+        @keyframes bounceIn { 
+            0% { opacity: 0; transform: scale(0.95) translateY(10px); } 
+            100% { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+    </style>
+</head>
+<body class="flex flex-col no-print pb-10">
+
+    <!-- KHỐI CẤU HÌNH (CONFIG) DÀNH CHO GIÁO VIÊN -->
+    <script>
+        const CONFIG = {
+            supportLevel: 3, // 3 = Ô trống hoàn toàn
+            timers: { step1: 180, step2: 300, step3: 120 }, // Thời gian (giây) cho từng bước (bước 4 không có)
+            
+            // Câu văn mẫu để học sinh luyện đọc ở Bước 4 sẽ được lấy tự động từ bài viết
+            readingText: "", 
+
+            // Đáp án Mindmap (chữ thường để so sánh)
+            mindmapAnswers: {
+                origin: ["16", "northern delta"], 
+                types: ["hat tho", "worship singing", "hat hau"],
+                instruments: ["moon-shaped lute", "bamboo clappers", "drum", "gong"],
+                costumes: ["clothes", "hats", "belts"]
+            },
+
+            wordBank: [
+                { word: "performance art", mean: "nghệ thuật biểu diễn", ex: "Chau van is a performance art." },
+                { word: "origin", mean: "nguồn gốc", ex: "Its origin is from the Northern Delta." },
+                { word: "instruments", mean: "nhạc cụ", ex: "They play traditional instruments." },
+                { word: "costumes", mean: "trang phục", ex: "Performers wear special costumes." }
+            ],
+
+            hintCards: [
+                "The traditional musical instruments",
+                "The beautiful costumes",
+                "The special singing style",
+                "The lively music",
+                "The traditional dances"
+            ],
+            
+            roles: ["Singer 🎤", "Lyricist ✍️", "Producer 🎧", "Fact-checker 🔎", "Backup 🎸"]
+        };
+    </script>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-2 border-pink-200 shadow-sm p-3">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+            <h1 class="text-2xl md:text-3xl font-black italic tracking-wide gradient-text uppercase">
+                🎤 The Voice 10
+            </h1>
+            <nav class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 font-bold">
+                <button onclick="switchTab('step1')" id="nav-step1" class="nav-btn flex-shrink-0 px-5 py-2 rounded-full bg-pink-500 text-white shadow-md transition">① Sơ đồ tư duy</button>
+                <button onclick="switchTab('step2')" id="nav-step2" class="nav-btn flex-shrink-0 px-5 py-2 rounded-full bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 transition">② Chọn & Viết</button>
+                <button onclick="switchTab('step3')" id="nav-step3" class="nav-btn flex-shrink-0 px-5 py-2 rounded-full bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 transition">③ Tạo Poster AI</button>
+                <button onclick="switchTab('step4')" id="nav-step4" class="nav-btn flex-shrink-0 px-5 py-2 rounded-full bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 transition">🎙️ Luyện Nói AI</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow w-full max-w-6xl mx-auto p-4 md:p-6 relative mt-4">
+        
+        <!-- Timer Component (Shared) -->
+        <div id="global-timer" class="absolute top-0 right-4 bg-white border-2 border-blue-200 rounded-2xl p-2 px-4 flex items-center gap-3 shadow-lg z-40 hidden">
+            <span id="timer-display" class="text-2xl font-black text-blue-600 font-mono">00:00</span>
+            <div class="flex gap-1">
+                <button onclick="startTimer()" class="w-8 h-8 flex items-center justify-center bg-green-100 text-green-600 rounded-full hover:bg-green-200 transition">▶</button>
+                <button onclick="pauseTimer()" class="w-8 h-8 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded-full hover:bg-yellow-200 transition">⏸</button>
+                <button onclick="resetTimer()" class="w-8 h-8 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition">↺</button>
+            </div>
+        </div>
+
+        <!-- STEP 1: MIND MAP -->
+        <section id="step1" class="tab-content active pt-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-black text-pink-600">BƯỚC 1: Sơ đồ tư duy 🧠</h2>
+                <button onclick="window.print()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                    <span>🖨️</span> In phiếu
+                </button>
+            </div>
+
+            <!-- Hint Keywords -->
+            <div class="glass-panel p-5 rounded-2xl mb-6 bg-yellow-50 border-2 border-yellow-200 shadow-sm">
+                <h3 class="font-black text-yellow-700 mb-3 text-sm">💡 GỢI Ý TỪ KHÓA ĐIỀN VÀO SƠ ĐỒ (Không theo thứ tự):</h3>
+                <div class="flex flex-wrap gap-2 text-sm font-bold text-gray-800">
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">drum</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">hat tho</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">16th century</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">clothes</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">bamboo clappers</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">northern delta</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">gong</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">belts</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">moon-shaped lute</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">hats</span>
+                    <span class="bg-white px-3 py-1.5 rounded-lg border border-yellow-300 shadow-sm">hat hau</span>
+                </div>
+            </div>
+
+            <!-- Mindmap Container -->
+            <div class="relative w-full glass-panel rounded-3xl p-8 flex flex-col items-center gap-10 md:gap-14 border-4 border-white">
+                <!-- Root -->
+                <div class="bg-amber-300 text-gray-900 p-5 rounded-2xl shadow-xl border-4 border-amber-400 z-10 w-full max-w-sm text-center transform hover:scale-105 transition">
+                    <h3 class="font-black italic text-xl md:text-2xl">Chau van singing</h3>
+                    <p class="text-sm font-bold mt-1 text-amber-800">an ancient form of Vietnamese performance art</p>
+                </div>
+
+                <!-- Branches Container -->
+                <div class="w-full flex flex-col md:flex-row justify-center gap-8 md:gap-4 relative">
+                    <!-- Branch 1: Origin -->
+                    <div class="flex-1 flex flex-col items-center gap-4">
+                        <div class="diamond bg-emerald-400 text-emerald-950 w-32 h-32 text-lg shadow-lg">Origin</div>
+                        <div class="flex flex-col gap-3 w-full px-2">
+                            <div class="flex items-center gap-2 bg-emerald-50 p-2 rounded-xl border border-emerald-200">
+                                <span class="text-xs font-black text-emerald-800 w-12 text-right">When:</span>
+                                <input type="text" data-group="origin" class="mm-input flex-1 bg-white border-2 border-emerald-300 rounded-lg p-2 text-sm text-gray-900 font-black">
+                            </div>
+                            <div class="flex items-center gap-2 bg-emerald-50 p-2 rounded-xl border border-emerald-200">
+                                <span class="text-xs font-black text-emerald-800 w-12 text-right">Where:</span>
+                                <input type="text" data-group="origin" class="mm-input flex-1 bg-white border-2 border-emerald-300 rounded-lg p-2 text-sm text-gray-900 font-black">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Branch 2: Types -->
+                    <div class="flex-1 flex flex-col items-center gap-4">
+                        <div class="diamond bg-cyan-400 text-cyan-950 w-32 h-32 text-lg shadow-lg">Types</div>
+                        <div class="flex flex-col gap-3 w-full px-2">
+                            <input type="text" data-group="types" class="mm-input w-full bg-cyan-50 border-2 border-cyan-300 rounded-xl p-3 text-sm text-gray-900 font-black text-center">
+                            <input type="text" data-group="types" class="mm-input w-full bg-cyan-50 border-2 border-cyan-300 rounded-xl p-3 text-sm text-gray-900 font-black text-center">
+                        </div>
+                    </div>
+
+                    <!-- Branch 3: Instruments -->
+                    <div class="flex-1 flex flex-col items-center gap-4">
+                        <div class="diamond bg-blue-400 text-blue-950 w-32 h-32 text-lg shadow-lg">Main<br>instruments</div>
+                        <div class="grid grid-cols-1 gap-2 w-full px-2">
+                            <input type="text" data-group="instruments" class="mm-input w-full bg-blue-50 border-2 border-blue-300 rounded-xl p-2 text-sm text-gray-900 font-black text-center">
+                            <input type="text" data-group="instruments" class="mm-input w-full bg-blue-50 border-2 border-blue-300 rounded-xl p-2 text-sm text-gray-900 font-black text-center">
+                            <input type="text" data-group="instruments" class="mm-input w-full bg-blue-50 border-2 border-blue-300 rounded-xl p-2 text-sm text-gray-900 font-black text-center">
+                            <input type="text" data-group="instruments" class="mm-input w-full bg-blue-50 border-2 border-blue-300 rounded-xl p-2 text-sm text-gray-900 font-black text-center">
+                        </div>
+                    </div>
+
+                    <!-- Branch 4: Costumes -->
+                    <div class="flex-1 flex flex-col items-center gap-4">
+                        <div class="diamond bg-rose-400 text-rose-950 w-32 h-32 text-lg shadow-lg">Costumes</div>
+                        <div class="flex flex-col gap-3 w-full px-2">
+                            <input type="text" data-group="costumes" class="mm-input w-full bg-rose-50 border-2 border-rose-300 rounded-xl p-3 text-sm text-gray-900 font-black text-center">
+                            <input type="text" data-group="costumes" class="mm-input w-full bg-rose-50 border-2 border-rose-300 rounded-xl p-3 text-sm text-gray-900 font-black text-center">
+                            <input type="text" data-group="costumes" class="mm-input w-full bg-rose-50 border-2 border-rose-300 rounded-xl p-3 text-sm text-gray-900 font-black text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 flex justify-center items-center gap-6">
+                <button onclick="checkMindmap()" class="btn-vibrant text-white font-black py-4 px-10 rounded-full text-xl transition">
+                    🚀 KIỂM TRA ĐÁP ÁN
+                </button>
+                <div id="mm-result" class="text-3xl font-black text-pink-600 bg-white px-6 py-2 rounded-full shadow-md hidden border-2 border-pink-200">0/11</div>
+            </div>
+        </section>
+
+        <!-- STEP 2: CHỌN & VIẾT -->
+        <section id="step2" class="tab-content pt-4">
+            <h2 class="text-3xl font-black text-indigo-600 mb-4">BƯỚC 2: Chọn & Viết (Drafting) ✍️</h2>
+            
+            <div class="glass-panel p-5 rounded-2xl mb-6 border-l-8 border-indigo-500 flex items-center gap-4">
+                <span class="text-3xl">📝</span>
+                <p class="font-bold text-lg text-gray-800">Đề bài: Work in pairs. Tell your partner what you find most interesting about chau van singing.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- Left Col: Setup & Hints -->
+                <div class="md:col-span-1 flex flex-col gap-4">
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <input type="text" id="team-name" placeholder="🌟 Tên Đội của bạn..." class="w-full bg-gray-50 border-2 border-purple-200 rounded-xl p-3 text-gray-800 font-bold mb-3 focus:border-purple-500 outline-none text-center">
+                        <button onclick="pickRole()" class="w-full bg-purple-100 text-purple-700 hover:bg-purple-200 border border-purple-300 px-3 py-2 rounded-xl text-sm font-bold transition">🎲 Bốc thăm vai trò</button>
+                        <div id="role-display" class="mt-3 text-center text-xl font-black text-purple-600 h-8"></div>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl bg-orange-50 border-orange-200">
+                        <h3 class="font-black text-orange-600 mb-3 text-sm">💡 5 Thẻ Ý Tưởng (Chọn 1 ý chính):</h3>
+                        <div id="hint-cards" class="flex flex-col gap-2">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl bg-blue-50 border-blue-200">
+                        <h3 class="font-black text-blue-600 mb-2 text-sm">📚 Ngân hàng từ vựng:</h3>
+                        <div id="vocab-bank" class="flex flex-wrap gap-2">
+                            <!-- Injected by JS -->
+                        </div>
+                        <div id="vocab-meaning" class="mt-3 text-sm text-blue-800 font-semibold hidden bg-white p-3 rounded-lg border border-blue-200 shadow-sm"></div>
+                    </div>
+                </div>
+
+                <!-- Right Col: Editor & Counters -->
+                <div class="md:col-span-2 flex flex-col gap-4">
+                    <div class="glass-panel p-6 rounded-2xl relative flex-grow flex flex-col border-2 border-pink-200">
+                        <textarea id="student-essay" class="w-full flex-grow bg-white border-2 border-gray-200 rounded-xl p-5 text-gray-800 text-lg font-medium focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none resize-none min-h-[250px] shadow-inner" placeholder="Học sinh gõ bài viết vào đây (8-10 câu)..."></textarea>
+                        
+                        <!-- Counters -->
+                        <div class="mt-5 grid grid-cols-4 gap-3 text-center text-sm">
+                            <div class="bg-gray-50 p-3 rounded-xl border-2 border-gray-100 shadow-sm">
+                                <span class="block text-gray-500 font-bold mb-1">Số câu</span>
+                                <span id="count-sentences" class="text-xl font-black text-gray-700">0/10</span>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-xl border-2 border-gray-100 shadow-sm">
+                                <span class="block text-gray-500 font-bold mb-1">Số từ</span>
+                                <span id="count-words" class="text-xl font-black text-gray-700">0</span>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-xl border-2 border-gray-100 shadow-sm">
+                                <span class="block text-gray-500 font-bold mb-1">Từ vựng</span>
+                                <span id="count-vocab" class="text-xl font-black text-gray-700">0/2</span>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-xl border-2 border-gray-100 shadow-sm">
+                                <span class="block text-gray-500 font-bold mb-1">Có "because"</span>
+                                <span id="count-because" class="text-xl font-black text-red-500">✘</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-3 text-center italic font-semibold">* Bộ đếm chỉ là công cụ gợi ý, giáo viên là người chấm điểm cuối cùng.</p>
+                    </div>
+
+                    <!-- Checklist -->
+                    <div class="glass-panel p-5 rounded-2xl bg-green-50 border-green-200">
+                        <h3 class="font-black text-green-700 mb-3 text-lg">✅ Checklist tự kiểm tra:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm font-bold text-gray-700">
+                            <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-green-100 rounded-lg transition"><input type="checkbox" class="form-checkbox text-green-500 h-5 w-5 rounded"> <span>Viết hoa chữ cái đầu câu</span></label>
+                            <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-green-100 rounded-lg transition"><input type="checkbox" class="form-checkbox text-green-500 h-5 w-5 rounded"> <span>Có dấu chấm kết thúc câu</span></label>
+                            <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-green-100 rounded-lg transition"><input type="checkbox" class="form-checkbox text-green-500 h-5 w-5 rounded"> <span>Dùng ít nhất 2 từ vựng chủ đề</span></label>
+                            <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-green-100 rounded-lg transition"><input type="checkbox" class="form-checkbox text-green-500 h-5 w-5 rounded"> <span>Đã luyện đọc ở Phòng Luyện Nói</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: TẠO POSTER AI -->
+        <section id="step3" class="tab-content pt-4">
+            <h2 class="text-3xl font-black text-purple-600 mb-6 text-center">BƯỚC 3: Tạo Poster Bằng Trí Tuệ Nhân Tạo 🎨</h2>
+            
+            <div class="max-w-4xl mx-auto flex flex-col gap-6">
+                <!-- Generate & Prompts -->
+                <div class="glass-panel p-6 rounded-3xl border-2 border-purple-200 shadow-xl bg-purple-50">
+                    <p class="font-bold text-purple-800 mb-4 text-center">Hãy lấy nội dung bài viết ở Bước 2 để tạo lệnh (prompt) cho AI nhé!</p>
+                    <button onclick="generatePrompts()" class="w-full btn-vibrant text-white font-black py-4 rounded-2xl text-lg shadow-lg flex justify-center items-center gap-2">
+                        <span>✨</span> BẤM VÀO ĐÂY ĐỂ TẠO PROMPT
+                    </button>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border-2 border-indigo-200 w-full">
+                    <h3 class="font-black text-indigo-600 mb-2 flex justify-between items-center text-sm">
+                        📝 Lệnh Tạo Poster (Dán vào Copilot/ChatGPT Plus)
+                        <button onclick="copyToClipboard('prompt1')" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 text-xs px-3 py-1.5 rounded-lg font-bold transition shadow-sm">📋 Copy</button>
+                    </h3>
+                    <textarea id="prompt1" readonly class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-gray-700 text-sm h-40 resize-none outline-none font-medium"></textarea>
+                </div>
+
+                <!-- Simple Instructions -->
+                <div class="glass-panel p-6 rounded-3xl border-2 border-yellow-300 relative bg-white mt-2">
+                    <div class="absolute -top-4 left-6 bg-yellow-400 text-yellow-900 font-black px-4 py-1 rounded-full text-sm shadow-md">HƯỚNG DẪN DÀNH CHO HỌC SINH</div>
+                    <p class="text-gray-800 text-lg font-bold text-center mt-3">
+                        Sau khi tạo lệnh, em hãy <span class="text-pink-600">copy và dán (paste) các lệnh trên vào chatbot AI</span> (ví dụ: ChatGPT, Gemini, Copilot...) để AI giúp em tạo Poster hoàn chỉnh nhé! 🚀
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 4: PHÒNG LUYỆN NÓI THÔNG MINH -->
+        <section id="step4" class="tab-content pt-4">
+            <h2 class="text-3xl font-black text-orange-600 mb-6 text-center">Phòng Luyện Nói AI 🎙️</h2>
+            
+            <div class="max-w-4xl mx-auto flex flex-col gap-6">
+                
+                <div class="glass-panel p-6 rounded-3xl border-2 border-blue-200 bg-white shadow-xl text-center">
+                    <p class="text-gray-700 font-bold mb-4">Hệ thống đã tự động lấy bài viết của em ở Bước 2 để làm kịch bản thuyết trình.<br>Bấm vào Micro, đọc to và rõ ràng để AI chấm điểm phát âm nhé!</p>
+                    
+                    <div id="speech-controls" class="flex flex-col items-center justify-center mb-6">
+                        <button id="mic-btn" onclick="toggleRecording()" class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center text-4xl text-white shadow-lg hover:bg-blue-600 transition border-4 border-blue-200">
+                            🎤
+                        </button>
+                        <p id="mic-status" class="mt-3 font-bold text-gray-600">Bấm vào Micro để bắt đầu nói</p>
+                    </div>
+
+                    <div id="speech-result-box" class="hidden text-left bg-blue-50 p-4 rounded-xl border border-blue-100 min-h-[80px] mb-6">
+                        <p class="text-sm font-bold text-blue-400 uppercase tracking-widest mb-1">AI Đang Nghe Được:</p>
+                        <p id="speech-result-text" class="text-lg text-gray-700 italic">...</p>
+                    </div>
+
+                    <!-- Khu vực Teleprompter & Chấm điểm -->
+                    <div id="speech-evaluation" class="mt-4">
+                        <!-- Rendered by JS -->
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- STATE & INITIALIZATION ---
+        let currentStep = 'step1';
+        let globalTimerInterval;
+        let timeRemaining = 0;
+        let isTimerRunning = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initStep2();
+            setupTextareaCounter();
+            
+            // Restore team name if exists
+            const savedTeam = localStorage.getItem('voice10_current_team');
+            if(savedTeam) {
+                document.getElementById('team-name').value = savedTeam;
+                updateTeamNames(savedTeam);
+            }
+        });
+
+        // --- NAVIGATION & UTILS ---
+        function switchTab(stepId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.className = "nav-btn flex-shrink-0 px-5 py-2 rounded-full bg-white text-gray-600 hover:bg-gray-100 border border-gray-200 transition font-bold";
+            });
+            
+            document.getElementById(stepId).classList.add('active');
+            
+            const btn = document.getElementById(`nav-${stepId}`);
+            let activeColor = 'bg-blue-500';
+            if(stepId === 'step1') activeColor = 'bg-pink-500';
+            if(stepId === 'step2') activeColor = 'bg-indigo-500';
+            if(stepId === 'step3') activeColor = 'bg-purple-500';
+            if(stepId === 'step4') activeColor = 'bg-orange-500';
+            
+            btn.className = `nav-btn flex-shrink-0 px-5 py-2 rounded-full ${activeColor} text-white shadow-md transition font-bold transform scale-105`;
+            
+            // Handle Step 4 data
+            if (stepId === 'step4') {
+                const essay = document.getElementById('student-essay').value.trim();
+                if (essay) {
+                    CONFIG.readingText = essay;
+                } else {
+                    CONFIG.readingText = "";
+                }
+                document.getElementById('speech-result-box').classList.remove('hidden');
+                evaluateReading('', CONFIG.readingText);
+            }
+
+            // Set Timer
+            if (CONFIG.timers[stepId]) {
+                setupTimer(CONFIG.timers[stepId]);
+                document.getElementById('global-timer').classList.remove('hidden');
+            } else {
+                pauseTimer();
+                document.getElementById('global-timer').classList.add('hidden');
+            }
+        }
+
+        // --- TIMER LOGIC ---
+        function setupTimer(seconds) {
+            clearInterval(globalTimerInterval);
+            isTimerRunning = false;
+            timeRemaining = seconds;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+            const s = (timeRemaining % 60).toString().padStart(2, '0');
+            const el = document.getElementById('timer-display');
+            el.innerText = `${m}:${s}`;
+            
+            if(timeRemaining <= 60) el.classList.add('text-red-500', 'animate-pulse');
+            else el.classList.remove('text-red-500', 'animate-pulse');
+        }
+
+        function startTimer() {
+            if (isTimerRunning || timeRemaining <= 0) return;
+            isTimerRunning = true;
+            globalTimerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                if (timeRemaining <= 0) {
+                    clearInterval(globalTimerInterval);
+                    isTimerRunning = false;
+                    playBeep();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(globalTimerInterval);
+            isTimerRunning = false;
+        }
+
+        function resetTimer() {
+            const currentTabId = document.querySelector('.tab-content.active').id;
+            if(CONFIG.timers[currentTabId]) setupTimer(CONFIG.timers[currentTabId]);
+        }
+
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                osc.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.5);
+            } catch (e) {}
+        }
+
+        // --- STEP 1: MIND MAP ---
+        function checkMindmap() {
+            const inputs = document.querySelectorAll('.mm-input');
+            let score = 0;
+            
+            inputs.forEach(i => {
+                i.classList.remove('bg-green-100', 'border-green-400', 'bg-red-100', 'border-red-400', 'text-green-800', 'text-red-800');
+            });
+            
+            let usedAnswers = { origin: [], types: [], instruments: [], costumes: [] };
+
+            inputs.forEach(input => {
+                let val = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+                const group = input.getAttribute('data-group');
+                let isCorrect = false;
+
+                if (!val) {
+                    input.classList.add('bg-red-100', 'border-red-400');
+                    return;
+                }
+
+                if (group === 'origin') {
+                    const keywords = CONFIG.mindmapAnswers.origin;
+                    const matchedKw = keywords.find(kw => val.includes(kw) && !usedAnswers.origin.includes(kw));
+                    if (matchedKw) {
+                        isCorrect = true;
+                        usedAnswers.origin.push(matchedKw);
+                    }
+                } else {
+                    const ansArray = CONFIG.mindmapAnswers[group];
+                    const matchedAns = ansArray.find(ans => 
+                        (val.includes(ans) || ans.includes(val)) && !usedAnswers[group].includes(ans)
+                    );
+                    
+                    if (matchedAns) {
+                        isCorrect = true;
+                        usedAnswers[group].push(matchedAns);
+                    }
+                }
+
+                if (isCorrect) {
+                    input.classList.add('bg-green-100', 'border-green-400', 'text-green-800');
+                    score++;
+                } else {
+                    input.classList.add('bg-red-100', 'border-red-400', 'text-red-800');
+                }
+            });
+
+            const resDiv = document.getElementById('mm-result');
+            resDiv.innerText = `${score}/11`;
+            resDiv.classList.remove('hidden');
+        }
+
+        // --- STEP 2: CHỌN & VIẾT ---
+        function initStep2() {
+            const hintContainer = document.getElementById('hint-cards');
+            CONFIG.hintCards.forEach((hint, idx) => {
+                const label = document.createElement('label');
+                label.className = "flex items-start gap-3 cursor-pointer p-3 rounded-xl bg-white border border-orange-100 hover:bg-orange-100 transition shadow-sm";
+                label.innerHTML = `<input type="radio" name="hint" value="${idx}" class="mt-1 text-orange-500 focus:ring-orange-400 w-4 h-4"> <span class="text-gray-700 font-bold text-sm">${hint}</span>`;
+                hintContainer.appendChild(label);
+            });
+
+            const vocabBank = document.getElementById('vocab-bank');
+            CONFIG.wordBank.forEach((v, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs font-bold border border-blue-200 transition shadow-sm";
+                btn.innerText = v.word;
+                btn.onclick = () => showVocabMeaning(idx);
+                vocabBank.appendChild(btn);
+            });
+
+            document.getElementById('team-name').addEventListener('input', (e) => {
+                const name = e.target.value;
+                updateTeamNames(name);
+                try { localStorage.setItem('voice10_current_team', name); } catch(e){}
+            });
+        }
+
+        function updateTeamNames(name) {
+            const safeName = name || "___";
+            // Placeholders for sync if needed
+        }
+
+        function pickRole() {
+            const roleEl = document.getElementById('role-display');
+            let count = 0;
+            const max = 15;
+            roleEl.innerText = "🎲 Đang quay...";
+            roleEl.classList.remove('text-purple-600');
+            roleEl.classList.add('text-gray-500');
+            
+            const interval = setInterval(() => {
+                roleEl.innerText = CONFIG.roles[Math.floor(Math.random() * CONFIG.roles.length)];
+                count++;
+                if (count > max) {
+                    clearInterval(interval);
+                    roleEl.classList.remove('text-gray-500');
+                    roleEl.classList.add('text-purple-600', 'animate-bounce');
+                    setTimeout(() => roleEl.classList.remove('animate-bounce'), 1000);
+                }
+            }, 80);
+        }
+
+        function showVocabMeaning(idx) {
+            const div = document.getElementById('vocab-meaning');
+            const v = CONFIG.wordBank[idx];
+            div.innerHTML = `<strong class="text-blue-700">${v.word}</strong>: ${v.mean}<br><span class="text-gray-500 font-medium">VD: ${v.ex}</span>`;
+            div.classList.remove('hidden');
+        }
+
+        function setupTextareaCounter() {
+            const ta = document.getElementById('student-essay');
+            ta.addEventListener('input', () => {
+                const text = ta.value.trim();
+                
+                const words = text ? text.split(/\s+/).length : 0;
+                document.getElementById('count-words').innerText = words;
+
+                const sentences = text ? (text.match(/[^.!?]+[.!?]+/g) || []).length : 0;
+                const sentEl = document.getElementById('count-sentences');
+                sentEl.innerText = `${sentences}/10`;
+                sentEl.className = (sentences >= 8 && sentences <= 10) ? "text-xl font-black text-green-500" : "text-xl font-black text-gray-700";
+
+                const hasBecause = /\bbecause\b/i.test(text);
+                const becEl = document.getElementById('count-because');
+                becEl.innerText = hasBecause ? "✔" : "✘";
+                becEl.className = hasBecause ? "text-xl font-black text-green-500" : "text-xl font-black text-red-500";
+
+                let vocabCount = 0;
+                CONFIG.wordBank.forEach(v => {
+                    if (new RegExp(`\\b${v.word}\\b`, 'i').test(text)) vocabCount++;
+                });
+                const vocEl = document.getElementById('count-vocab');
+                vocEl.innerText = `${vocabCount}/2`;
+                vocEl.className = vocabCount >= 2 ? "text-xl font-black text-green-500" : "text-xl font-black text-gray-700";
+
+                try { localStorage.setItem('voice10_essay', text); } catch(e){}
+            });
+
+            const savedText = localStorage.getItem('voice10_essay');
+            if (savedText) {
+                ta.value = savedText;
+                ta.dispatchEvent(new Event('input'));
+            }
+        }
+
+        // --- STEP 3: TẠO POSTER AI ---
+        function generatePrompts() {
+            const text = document.getElementById('student-essay').value.trim();
+            const p1 = document.getElementById('prompt1');
+            
+            if (!text) {
+                p1.value = "Hãy viết bài ở Bước 2 trước nhé!";
+                return;
+            }
+
+            p1.value = `Create a flat vector educational presentation poster about "chau van singing". Based on this text: "${text}", extract a short catchy Title and 4 short key phrases. Write the Title in large, clear letters at the top of the poster. Visually arrange the 4 key phrases clearly on the canvas as speaking cues. Use a vibrant 3-color palette. Ensure all text is readable and correctly spelled. NO realistic human faces.`;
+            
+            p1.classList.add('bg-indigo-100');
+            setTimeout(() => {
+                p1.classList.remove('bg-indigo-100');
+            }, 500);
+        }
+
+        function copyToClipboard(id) {
+            const el = document.getElementById(id);
+            el.select();
+            document.execCommand('copy');
+            
+            const btn = el.previousElementSibling.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "✔ Đã chép";
+            btn.classList.replace('text-indigo-700', 'text-white');
+            btn.classList.replace('text-pink-700', 'text-white');
+            btn.classList.add('bg-green-500');
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.replace('text-white', 'text-indigo-700');
+                btn.classList.replace('text-white', 'text-pink-700');
+                btn.classList.remove('bg-green-500');
+            }, 2000);
+        }
+
+        // --- STEP 4: SPEECH RECOGNITION (AI SPEAKING ROOM) ---
+        let recognition;
+        let isRecording = false;
+        let finalTranscript = '';
+
+        function initSpeech() {
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (window.SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.interimResults = true; 
+                recognition.maxAlternatives = 1;
+
+                recognition.onresult = (event) => {
+                    let interimTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript + ' ';
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    const spokenText = finalTranscript + interimTranscript;
+                    
+                    document.getElementById('speech-result-text').innerHTML = `<span class="text-gray-800 font-bold">${finalTranscript}</span><span class="text-gray-400 italic">${interimTranscript}</span>`;
+                    
+                    evaluateReading(spokenText, CONFIG.readingText);
+                };
+
+                recognition.onerror = (event) => {
+                    document.getElementById('mic-status').innerText = "Lỗi Micro: " + event.error;
+                    document.getElementById('mic-status').classList.add('text-red-500');
+                    stopRecording();
+                };
+                
+                recognition.onend = () => {
+                    if (isRecording) stopRecording();
+                };
+            } else {
+                document.getElementById('speech-controls').innerHTML = "<p class='text-red-500 font-bold p-4 bg-red-50 rounded-xl border border-red-200'>❌ Trình duyệt không hỗ trợ. Vui lòng dùng Google Chrome hoặc Edge.</p>";
+            }
+        }
+
+        function toggleRecording() {
+            if (!recognition) initSpeech();
+            if (!recognition) return;
+
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        function startRecording() {
+            try {
+                finalTranscript = '';
+                recognition.start();
+                isRecording = true;
+                
+                const micBtn = document.getElementById('mic-btn');
+                micBtn.classList.replace('bg-blue-500', 'bg-red-500');
+                micBtn.classList.replace('border-blue-200', 'border-red-200');
+                micBtn.classList.add('animate-pulse');
+                
+                document.getElementById('mic-status').innerText = "Đang nghe... Hãy bắt đầu thuyết trình.";
+                document.getElementById('mic-status').className = "font-bold text-red-500";
+                
+                document.getElementById('speech-result-box').classList.remove('hidden');
+                document.getElementById('speech-result-text').innerHTML = "...";
+                
+                evaluateReading('', CONFIG.readingText);
+            } catch(e) {}
+        }
+
+        function stopRecording() {
+            if(recognition) recognition.stop();
+            isRecording = false;
+            
+            const micBtn = document.getElementById('mic-btn');
+            if(micBtn) {
+                micBtn.classList.replace('bg-red-500', 'bg-blue-500');
+                micBtn.classList.replace('border-red-200', 'border-blue-200');
+                micBtn.classList.remove('animate-pulse');
+            }
+            
+            const status = document.getElementById('mic-status');
+            if(status && !status.innerText.includes("Lỗi")) {
+                status.innerText = "Bấm vào Micro để bắt đầu nói lại";
+                status.className = "font-bold text-gray-600";
+            }
+            
+            evaluateReading(finalTranscript, CONFIG.readingText);
+        }
+
+        function evaluateReading(spoken, target) {
+            if (!target) {
+                document.getElementById('speech-evaluation').innerHTML = `<p class='text-red-500 font-bold'>Vui lòng viết kịch bản ở Bước 2 trước.</p>`;
+                return;
+            }
+            
+            const cleanSpoken = spoken.toLowerCase().replace(/[.,!?;:]/g, '').split(/\s+/);
+            const targetWords = target.split(/\s+/);
+            
+            let html = '';
+            let correctCount = 0;
+            let spokenCopy = [...cleanSpoken];
+
+            targetWords.forEach((originalWord) => {
+                const cleanWord = originalWord.toLowerCase().replace(/[.,!?;:]/g, '');
+                if (spokenCopy.includes(cleanWord) && cleanWord !== "") {
+                    html += `<span class="text-green-600 font-black mx-1 pb-1 border-b-4 border-green-400 transform scale-110 inline-block transition-transform duration-200">${originalWord}</span>`;
+                    correctCount++;
+                    const idx = spokenCopy.indexOf(cleanWord);
+                    spokenCopy.splice(idx, 1);
+                } else {
+                    html += `<span class="text-gray-300 font-medium mx-1 pb-1">${originalWord}</span>`;
+                }
+            });
+
+            // Calculate score purely based on letters/words available
+            const totalWords = targetWords.filter(w => w.trim() !== "").length;
+            const score = totalWords === 0 ? 0 : Math.round((correctCount / totalWords) * 100);
+            let feedback = isRecording ? "🎙️ Đang nghe em nói..." : (score >= 80 ? "🎉 Tuyệt vời! Phát âm rất tốt." : "💪 Cố lên! Hãy nói to và rõ hơn.");
+            
+            document.getElementById('speech-evaluation').innerHTML = `
+                <div class="p-5 bg-gray-50 rounded-xl border-2 border-gray-100 text-center shadow-inner">
+                    <p class="text-lg font-bold mb-4 text-gray-700">Tiến độ bài nói: <span class="${score >= 80 ? 'text-green-600' : 'text-orange-500'} text-4xl">${score}%</span></p>
+                    <div class="text-2xl leading-loose tracking-wide flex flex-wrap justify-center gap-y-3 mb-6">${html}</div>
+                    <p class="text-sm font-bold text-blue-600 bg-blue-50 py-3 rounded-lg border border-blue-100">${feedback}</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

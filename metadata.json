@@ -1,0 +1,6 @@
+{
+  "name": "The Voice 10 - Chung Kết (Unit 3: Chau Van Singing)",
+  "description": "Học liệu số tương tác cho tiết học Tiếng Anh lớp 10 (Global Success - Unit 3: Music - Chau Van Singing): Sơ đồ tư duy, Chọn & Viết, Tạo Poster AI, và Phòng Luyện Nói AI.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
